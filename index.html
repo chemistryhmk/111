@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер VBE: Химическая связь (12 класс)</title>
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --success-bg: #f0fdf4;
+            --success-border: #22c55e;
+            --success-text: #166534;
+            --error-bg: #fef2f2;
+            --error-border: #ef4444;
+            --error-text: #991b1b;
+            --accent-bg: #eff6ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px 16px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin: 0 0 8px 0;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        .progress-bar-container {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .progress-bar {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .question-badge {
+            display: inline-block;
+            background: var(--accent-bg);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px 0;
+        }
+
+        .option-item {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            background: #fff;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary);
+            background-color: var(--accent-bg);
+        }
+
+        .option-item input {
+            margin-right: 14px;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        .matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .matching-table th, .matching-table td {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            text-align: left;
+        }
+
+        .matching-table th {
+            background: #f1f5f9;
+            font-size: 1rem;
+        }
+
+        .matching-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.05rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .text-answer-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+
+        .text-answer-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .explanation-box {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .explanation-box.correct {
+            background-color: var(--success-bg);
+            border: 2px solid var(--success-border);
+            color: var(--success-text);
+        }
+
+        .explanation-box.incorrect {
+            background-color: var(--error-bg);
+            border: 2px solid var(--error-border);
+            color: var(--error-text);
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .explanation-text {
+            color: #1e293b;
+            font-size: 1.05rem;
+        }
+
+        .results-card {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 16px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Тренажер VBE: Химическая связь</h1>
+        <p class="subtitle">Полный обновленный курс для 12 класса (Случайное распределение ответов)</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="stats-header">
+            <span id="question-count">Вопрос 1 из 30</span>
+            <span id="score-count">Набрано баллов: 0</span>
+        </div>
+    </header>
+
+    <main id="quiz-container"></main>
+</div>
+
+<script>
+const quizData = [
+    // --- РАЗНООБРАЗНОЕ РАСПРЕДЕЛЕНИЕ ИНДЕКСОВ ПРАВИЛЬНЫХ ОТВЕТОВ ---
+    {
+        id: 1,
+        level: "Раздел 1: Механизмы связи (1 балл)",
+        type: "single",
+        question: "В каком из приведенных рядов все вещества имеют исключительно КОВАЛЕНТНУЮ ПОЛЯРНУЮ химическую связь?",
+        options: [
+            "NaCl, H₂O, NH₃",
+            "Cl₂, N₂, O₂",
+            "H₂O, HCl, CO₂",
+            "K2S, CH₄, H₂"
+        ],
+        correct: 2, // Индекс 2
+        explanation: "<b>Правильный ответ: H₂O, HCl, CO₂</b><br>Во всех этих соединениях связи образованы атомами разных неметаллов с разной электроотрицательностью, поэтому общие электронные пары смещены к более электроотрицательному атому."
+    },
+    {
+        id: 2,
+        level: "Раздел 1: Природа донорно-акцепторной связи (1 балл)",
+        type: "single",
+        question: "В катионе гидроксония H₃O⁺ одна из связей образована по донорно-акцепторному механизму. Каковы свойства этой связи по сравнению со сгенерированными по обменному механизму?",
+        options: [
+            "Все три связи абсолютно одинаковы по энергии, длине и свойствам.",
+            "Донорно-акцепторная связь в два раза длиннее и легко разрывается.",
+            "Донорно-акцепторная связь является ионной, а остальные — ковалентными.",
+            "Кислород отдаёт свой протон катиону водорода."
+        ],
+        correct: 0, // Индекс 0
+        explanation: "<b>Правильный ответ: Все связи абсолютно одинаковы</b><br>Механизм показывает только то, как связь образовалась. После перекрывания орбиталей образуется единая электронное облако, поэтому все 3 связи O-H в H₃O⁺ физически идентичны."
+    },
+    {
+        id: 3,
+        level: "Раздел 1: Кратность и прочность связей (1 балл)",
+        type: "single",
+        question: "Энергия одинарной связи C–C равна 348 кДж/моль, а тройной связи C≡C в ацетилене — 839 кДж/моль. Почему тройная связь прочнее одинарной, но её энергия НЕ в 3 раза больше (348 × 3 = 1044 кДж/моль)?",
+        options: [
+            "При образовании тройной связи углерод превращается в ион.",
+            "Тройная связь состоит из 1 прочной σ-связи и 2 менее прочных π-связей бокового перекрывания.",
+            "Тройная связь состоит из 3 σ-связей, заслоняющих друг друга.",
+            "В ацетилене атомы углерода отталкиваются из-за ионного заряда."
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: Состав из 1 σ- и 2 π-связей</b><br>σ-связь образуется при прямом осевом перекрывании (максимальная прочность). Две π-связи возникают при боковом перекрывании p-орбиталей, поэтому степень их перекрывания меньше и энергия каждой π-связи ниже энергии σ-связи."
+    },
+    {
+        id: 4,
+        level: "Раздел 2: Гибридизация орбиталей (1 балл)",
+        type: "single",
+        question: "Какова гибридизация валентных орбиталей атомов углерода и валентный угол в молекуле этена (CH₂=CH₂)?",
+        options: [
+            "sp³-гибридизация, угол 109.5°",
+            "sp-гибридизация, угол 180°",
+            "Гибридизация отсутствует, угол 90°",
+            "sp²-гибридизация, угол 120°"
+        ],
+        correct: 3, // Индекс 3
+        explanation: "<b>Правильный ответ: sp²-гибридизация, угол 120°</b><br>Каждый атом углерода при двойной связи образует 3 σ-связи, гибридизуя одну s- и две p-орбитали. Они лежат в одной плоскости под углами 120°."
+    },
+    {
+        id: 5,
+        level: "Раздел 2: Влияние неподеленных пар на углы связей (1 балл)",
+        type: "single",
+        question: "Центральные атомы в CH₄, NH₃ и H₂O находятся в sp³-гибридизации. Расположите эти молекулы в порядке УМЕНЬШЕНИЯ валентного угла между связями:",
+        options: [
+            "H₂O > NH₃ > CH₄",
+            "CH₄ > NH₃ > H₂O",
+            "NH₃ > CH₄ > H₂O",
+            "Валентные углы во всех молекулах строго одинаковы (109.5°)"
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: CH₄ (109.5°) > NH₃ (107°) > H₂O (104.5°)</b><br>Неподеленные электронные пары оказывают более сильное отталкивающее действие, чем связывающие электронные пары. У CH₄ — 0 пар (109.5°), у NH₃ — 1 пара (107°), у H₂O — 2 пары (104.5°)."
+    },
+    {
+        id: 6,
+        level: "Раздел 2: Полярность геометрических фигур (1 балл)",
+        type: "single",
+        question: "В молекуле BF₃ связи B-F являются сильно полярными. Однако сам трифторид бора является неполярным соединением. Какова причина этого?",
+        options: [
+            "Молекула имеет плоскую симметричную тригональную форму (sp²), и диполи связей взаимно компенсируются.",
+            "Фтор отдает свои электроны бору с образованием ионной решетки.",
+            "Молекула BF₃ образует межмолекулярные водородные связи.",
+            "Атом бора не имеет электронов на внешнем уровне."
+        ],
+        correct: 0, // Индекс 0
+        explanation: "<b>Правильный ответ: Симметричная тригонально-плоская форма (sp²)</b><br>Векторная сумма трех одинаковых диполей связей B-F, расположенных под углами 120° в одной плоскости, равна нулю."
+    },
+    {
+        id: 7,
+        level: "Раздел 3: Закономерности плавления металлов (1 балл)",
+        type: "single",
+        question: "В ряду щелочных металлов Li → Na → K → Rb → Cs температура плавления монотонно СНИЖАЕТСЯ (у Li — 180 °C, у Cs — 28 °C). Чем это объясняется?",
+        options: [
+            "Увеличивается количество валентных электронов на внешнем уровне.",
+            "Металлы реагируют с азотом воздуха.",
+            "Увеличивается радиус катиона металлов, из-за чего ослабевает притяжение ионов к 'электронному газу'.",
+            "Цезий становится неполярным газом."
+        ],
+        correct: 2, // Индекс 2
+        explanation: "<b>Правильный ответ: Увеличение радиуса катиона</b><br>У всех щелочных металлов по 1 валентному электрону. Однако радиус катиона от Li⁺ к Cs⁺ увеличивается, плотность заряда падает, и металлическая связь ослабевает."
+    },
+    {
+        id: 8,
+        level: "Раздел 3: Металлическая решетка и деформация (1 балл)",
+        type: "single",
+        question: "Что происходит со структурой металла при его чеканке, ковке или вытягивании в проволоку?",
+        options: [
+            "Катионы металла разрушаются и превращаются в неметаллы.",
+            "Слои положительных ионов смещаются относительно друг друга, а подвижный 'электронный газ' мгновенно перераспределяется, сохраняя связь.",
+            "Электроны покидают кристалл, превращая металл в диэлектрик.",
+            "Образуются прочные ковалентные одинарные связи."
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: Смещение слоев ионов в 'электронном газе'</b><br>Ненаправленность металлической связи позволяет слоям катионов скользить друг относительно друга без образования сил отталкивания."
+    },
+    {
+        id: 9,
+        level: "Раздел 4: Природа межмолекулярного притяжения (1 балл)",
+        type: "single",
+        question: "При снижении температуры до -269 °C благородный газ гелий (He) превращается в жидкость. Какая сила удерживает атомы гелия в жидком состоянии?",
+        options: [
+            "Ионная связь",
+            "Дисперсионные силы Ван-дер-Ваальса (притяжение мгновенных диполей)",
+            "Ковалентная одинарная σ-связь",
+            "Межатомная водородная связь"
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: Дисперсионные силы Ван-дер-Ваальса</b><br>В неполярных атомах гелия флуктуации электронов создают мгновенные диполи, которые индуцируют притяжение в соседних атомах."
+    },
+    {
+        id: 10,
+        level: "Раздел 4: Аномалии физических свойств воды (1 балл)",
+        type: "single",
+        question: "Какая особенность структуры льда приводит к тому, что при $0^\\circ\\text{C}$ его плотность меньше плотности жидкой воды при той же температуре?",
+        options: [
+            "В структуру льда входят пузырьки вакуума.",
+            "Лёд состоит из ионов Na⁺ и Cl⁻.",
+            "Молекулы воды во льду объединены 4 направленными водородными связями в ажурную решетку с избыточными пустотами.",
+            "В жидкой воде отсутствуют атомы водорода."
+        ],
+        correct: 2, // Индекс 2
+        explanation: "<b>Правильный ответ: Ажурная решетка с пустотами за счет 4 водородных связей</b><br>При кристаллизации льда каждая молекула фиксирует 4 тетраэдрические водородные связи. Возникает каркас с большими внутренними пустотами, объем растет, а плотность падает."
+    },
+    {
+        id: 11,
+        level: "Раздел 4: Растворимость спиртов и строения (1 балл)",
+        type: "single",
+        question: "Метанол (CH₃OH) растворяется в воде неограниченно, а гексанол-1 (C₆H₁₃OH) — очень слабо. В чем причина этого различия?",
+        options: [
+            "У гексанола преобладает длинный гидрофобный углеводородный радиус, снижающий сродство к воде.",
+            "В метаноле водородные связи отсутствуют.",
+            "Гексанол реагирует с водой с выпадением осадка.",
+            "Метанол является ионным соединением."
+        ],
+        correct: 0, // Индекс 0
+        explanation: "<b>Правильный ответ: Доминирование длинного гидрофобного радиуса</b><br>Спирты состоят из гидрофильной группы -OH и гидрофобного радикала. В гексаноле 6 атомов углерода создают крупный неполярный 'хвост', ухудшающий растворимость."
+    },
+
+    // --- РАЗДЕЛ МНОЖЕСТВЕННОГО ВЫБОРА ---
+    {
+        id: 12,
+        level: "Раздел 5: Несколько ответов — Водородная связь (2 балла)",
+        type: "multiple",
+        question: "Выберите ВСЕ вещества, молекулы которых способны образовывать водородные связи МЕЖДУ СОБОЙ:",
+        options: [
+            "Вода (H₂O)",
+            "Метан (CH₄)",
+            "Уксусная кислота (CH₃COOH)",
+            "Фтороводород (HF)",
+            "Диметиловый эфир (CH₃-O-CH₃)"
+        ],
+        correct: [0, 2, 3],
+        explanation: "<b>Правильные ответы: H₂O, CH₃COOH, HF</b><br>Для образования водородной связи МЕЖДУ СОБОЙ молекула должна содержать водород, непосредственно связанный с O, N или F. В диметиловом эфире нет связей O-H."
+    },
+    {
+        id: 13,
+        level: "Раздел 5: Несколько ответов — Кристаллические решетки (2 балла)",
+        type: "multiple",
+        question: "Выберите ВСЕ правильные утверждения о веществах с атомной кристалической решеткой (алмаз, кварц SiO₂):",
+        options: [
+            "Они обладают очень высокой твердостью и высокой температурой плавления.",
+            "В узлах решетки находятся молекулы, связанные слабыми силами Ван-дер-Ваальса.",
+            "Все атомы в решетке соединены между собой прочными ковалентными связями.",
+            "Они легко растворяются в воде при комнатной температуре."
+        ],
+        correct: [0, 2],
+        explanation: "<b>Правильные ответы: 1 и 3</b><br>Атомные решетки представляют собой непрерывный трехмерный каркас из ковалентных связей, что обеспечивает колоссальную прочность и нерастворимость."
+    },
+    {
+        id: 14,
+        level: "Раздел 5: Несколько ответов — Полярность и форма (2 балла)",
+        type: "multiple",
+        question: "Выберите ВСЕ НЕПОЛЯРНЫЕ молекулы из приведенного списка:",
+        options: [
+            "CO₂ (линейная форма)",
+            "H₂O (угловая форма)",
+            "CH₄ (тетраэдрическая форма)",
+            "NH₃ (тригонально-пирамидальная форма)"
+        ],
+        correct: [0, 2],
+        explanation: "<b>Правильные ответы: CO₂ и CH₄</b><br>Благодаря симметричной геометрии (линейная для sp и тетраэдрическая для sp³) полярности отдельных связей C=O и C-H полностью компенсируются."
+    },
+
+    // --- ЗАДАНИЯ НА СООТВЕТСТВИЕ (С ПЕРЕМЕШИВАНИЕМ) ---
+    {
+        id: 15,
+        level: "Раздел 6: Соответствие — Типы связей (2 балла)",
+        type: "matching",
+        question: "Установите соответствие между химической формулой вещества и преобладающим типом связи в нем:",
+        left: [
+            "Фторид калия (KF)",
+            "Азот (N₂)",
+            "Бромоводород (HBr)"
+        ],
+        rightOptions: [
+            "Ковалентная полярная",
+            "Ионная",
+            "Ковалентная неполярная"
+        ],
+        correct: {
+            0: "Ионная",
+            1: "Ковалентная неполярная",
+            2: "Ковалентная полярная"
+        },
+        explanation: "<b>Правильное соответствие:</b><br>• KF — Ионная (металл K + неметалл F)<br>• N₂ — Ковалентная неполярная (атомы одного неметалла)<br>• HBr — Ковалентная полярная (разные неметаллы)"
+    },
+    {
+        id: 16,
+        level: "Раздел 6: Соответствие — Гибридизация (2 балла)",
+        type: "matching",
+        question: "Установите соответствие между углом связи и типом гибридизации орбиталей центрального атома углерода:",
+        left: [
+            "Угол 180° (линейная)",
+            "Угол 120° (плоская)",
+            "Угол 109.5° (тетраэдр)"
+        ],
+        rightOptions: [
+            "sp³-гибридизация",
+            "sp-гибридизация",
+            "sp²-гибридизация"
+        ],
+        correct: {
+            0: "sp-гибридизация",
+            1: "sp²-гибридизация",
+            2: "sp³-гибридизация"
+        },
+        explanation: "<b>Правильное соответствие:</b><br>• 180° — sp-гибридизация<br>• 120° — sp²-гибридизация<br>• 109.5° — sp³-гибридизация"
+    },
+
+    // --- ВОПРОСЫ ОТКРЫТОГО ТИПА (БЕЗ ПОДСКАЗОК В ПОЛЯХ) ---
+    {
+        id: 17,
+        level: "Раздел 7: Открытый вопрос — Подсчет π-связей (2 балла)",
+        type: "open",
+        question: "Определите число пи (π) связей в одной молекуле этина / ацетилена (HC≡CH). Введите число.",
+        correctAnswer: "2",
+        acceptedAnswers: ["2", "два"],
+        explanation: "<b>Правильный ответ: 2</b><br>Тройная связь C≡C состоит из одной прочной σ-связи и двух перпендикулярных π-связей."
+    },
+    {
+        id: 18,
+        level: "Раздел 7: Открытый вопрос — Тип гибридизации (2 балла)",
+        type: "open",
+        question: "Напишите тип гибридизации валентных орбиталей атома углерода в молекуле метана CH₄ (например: sp3).",
+        correctAnswer: "sp3",
+        acceptedAnswers: ["sp3", "sp^3"],
+        explanation: "<b>Правильный ответ: sp3</b><br>В метеане одна s- и три p-орбитали углерода выравниваются, образуя 4 одинаковые sp³-гибридные орбитали."
+    },
+    {
+        id: 19,
+        level: "Раздел 7: Открытый вопрос — Расчет VBE (3 балла)",
+        type: "open",
+        question: "Вычислите массу (в граммах) воды, образующейся при реакций 1.0 моль аммиака NH₃ с кислородом: 4NH₃ + 3O₂ → 2N₂ + 6H₂O. M(H₂O) = 18 г/моль. Введите число.",
+        correctAnswer: "27",
+        acceptedAnswers: ["27", "27 г", "27г"],
+        explanation: "<b>Решение:</b><br>1) Из 4 моль NH₃ образуется 6 моль H₂O.<br>2) Из 1.0 моль NH₃ образуется $1.0 \\times \\frac{6}{4} = 1.5\\text{ моль H}_2\\text{O}$.<br>3) Масса $m = 1.5\\text{ моль} \\times 18\\text{ г/моль} = 27\\text{ г}$."
+    },
+
+    // --- ДОПОЛНИТЕЛЬНЫЕ ВОПРОСЫ НА ЗАКРЕПЛЕНИЕ ---
+    {
+        id: 20,
+        level: "Раздел 8: Влияние разветвления цепи (1 балл)",
+        type: "single",
+        question: "Какое соединение из изомеров гексана C₆H₁₄ имеет НАИМЕНЬШУЮ температуру кипения?",
+        options: [
+            "2,2-диметилбутан (наиболее разветвленный)",
+            "Гексан (неразветвленный)",
+            "2-метилпентан",
+            "3-метилпентан"
+        ],
+        correct: 0, // Индекс 0
+        explanation: "<b>Правильный ответ: 2,2-диметилбутан</b><br>Чем сильнее разветвлена молекула, тем ближе ее форма к сфере. Это уменьшает площадь контакта между молекулами, ослабляет силы Ван-дер-Ваальса и понижает температуру кипения."
+    },
+    {
+        id: 21,
+        level: "Раздел 8: Полярность связей и электроотрицательность (1 балл)",
+        type: "single",
+        question: "Расположите связи H-F, H-Cl, H-Br, H-I в порядке УМЕНЬШЕНИЯ их полярности:",
+        options: [
+            "H-I > H-Br > H-Cl > H-F",
+            "H-F > H-Cl > H-Br > H-I",
+            "H-Cl > H-F > H-Br > H-I",
+            "Все связи имеют одинаковую полярность"
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: H-F > H-Cl > H-Br > H-I</b><br>Полярность связи напрямую зависит от разности электроотрицательностей атомов. Электроотрицательность галогенов падает в ряду F (4.0) > Cl (3.0) > Br (2.8) > I (2.5)."
+    },
+    {
+        id: 22,
+        level: "Раздел 8: Заряд и свойства ионных кристаллов (1 балл)",
+        type: "single",
+        question: "Оксид магния MgO плавится при 2852 °C, а хлорид натрия NaCl — при 801 °C. В чем основная причина такой высокой прочности решетки MgO?",
+        options: [
+            "В MgO образуются тройные ковалентные связи.",
+            "Заряды ионов в MgO равны +2 и -2 (в NaCl: +1 и -1), что усиливает кулоновское притяжение ионов в 4 раза.",
+            "Магний является газом.",
+            "NaCl не имеет кристаллической решетки."
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: Заряды ионов +2 и -2 в MgO</b><br>Сила кулоновского притяжения в ионной решетке пропорциональна произведению зарядов ионов ($q_1 \\cdot q_2$). У MgO произведение равно $2 \\cdot 2 = 4$, а у NaCl — $1 \\cdot 1 = 1$."
+    },
+    {
+        id: 23,
+        level: "Раздел 8: Комплексные соединения (1 балл)",
+        type: "single",
+        question: "Какая частица выступает ДОНОРОМ электронной пары при образовании комплексного тетрафтороборат-иона BF₄⁻ из BF₃ и F⁻?",
+        options: [
+            "Атом бора (B)",
+            "Фторид-ион (F⁻)",
+            "Молекула BF₃ в целом",
+            "Катион водорода"
+        ],
+        correct: 1, // Индекс 1
+        explanation: "<b>Правильный ответ: Фторид-ион (F⁻)</b><br>Фторид-ион имеет полностью заполненную внешнюю оболочку с неподеленными электронными парами и передает одну пару на вакантную p-орбиталь атома бора."
+    },
+    {
+        id: 24,
+        level: "Раздел 8: Водородная связь в кетонах (1 балл)",
+        type: "single",
+        question: "Почему пропанон / ацетон (CH₃COCH₃) растворяется в воде неограниченно, но сам кипит при низкой температуре (56 °C)?",
+        options: [
+            "Ацетон образован только ионными связями.",
+            "Атомы водорода в ацетоне образуют водородные связи между собой.",
+            "Ацетон образует водородные связи с молекулами воды (через O=C), но не между своими молекулами.",
+            "Ацетон неполярен."
+        ],
+        correct: 2, // Индекс 2
+        explanation: "<b>Правильный ответ: Образует водородные связи с водой, но не между собой</b><br>В ацетоне нет связей O-H (водород связан с C), поэтому между молекулами ацетона водородных связей нет ($T_{\\text{кип}}$ низкая). Кислород C=O имеет неподеленные пары и принимает водородные связи от воды (растворимость высокая)."
+    },
+    {
+        id: 25,
+        level: "Раздел 9: Несколько ответов — Свойства металлов (2 балла)",
+        type: "multiple",
+        question: "Выберите ВСЕ свойства, обусловленные наличием свободного 'электронного газа' в металлическом кристалле:",
+        options: [
+            "Высокая электрическая проводимость",
+            "Хрупкость при ударе",
+            "Высокая теплопроводность",
+            "Металлический блеск",
+            "Растворимость в неполярных растворителях"
+        ],
+        correct: [0, 2, 3],
+        explanation: "<b>Правильные ответы: Электропроводность, теплопроводность, блеск</b><br>Свободные электроны переносят заряд и тепловую энергию, а также переизлучают падающие фотоны света (блеск)."
+    },
+    {
+        id: 26,
+        level: "Раздел 9: Соответствие — Число σ- и π-связей (2 балла)",
+        type: "matching",
+        question: "Установите соответствие между молекулой и количеством π-связей в ней:",
+        left: [
+            "Этан (C₂H₆)",
+            "Этен (C₂H₄)",
+            "Этин (C₂H₂)"
+        ],
+        rightOptions: [
+            "2 π-связи",
+            "0 π-связей",
+            "1 π-связь"
+        ],
+        correct: {
+            0: "0 π-связей",
+            1: "1 π-связь",
+            2: "2 π-связи"
+        },
+        explanation: "<b>Правильное соответствие:</b><br>• C₂H₆ — 0 π-связей (все связи одинарные σ)<br>• C₂H₄ — 1 π-связь (двойная связь C=C)<br>• C₂H₂ — 2 π-связи (тройная связь C≡C)"
+    },
+    {
+        id: 27,
+        level: "Раздел 9: Открытый вопрос — Угол в молекуле воды (1 балл)",
+        type: "open",
+        question: "Укажите валентный угол (в градусах с точностью до десятых) между связями O-H в молекуле воды H₂O. (Запишите только число, например: 104.5).",
+        correctAnswer: "104.5",
+        acceptedAnswers: ["104.5", "104,5"],
+        explanation: "<b>Правильный ответ: 104.5</b><br>Из-за отталкивания двух неподеленных электронных пар кислорода идеальный тетраэдрический угол 109.5° сжимается до 104.5°."
+    },
+    {
+        id: 28,
+        level: "Раздел 9: Сравнение длин связей галогенов (1 балл)",
+        type: "single",
+        question: "В каком из приведенных молекул длина ковалентной связи между атомами галогена НАИБОЛЬШАЯ?",
+        options: ["F₂", "Cl₂", "Br₂", "I₂"],
+        correct: 3, // Индекс 3
+        explanation: "<b>Правильный ответ: I₂</b><br>Атомный радиус галогенов увеличивается от F к I. Атом йода имеет наибольший радиус (5 электронных слоев), поэтому связь I-I наиболшая по длине и наименее прочная."
+    },
+    {
+        id: 29,
+        level: "Раздел 9: Электроотрицательность и неметаллы (1 балл)",
+        type: "single",
+        question: "Какова закономерность изменения электроотрицательности элементов в главных подгруппах Периодической системы СНИЗУ ВВЕРХ?",
+        options: [
+            "Электроотрицательность уменьшается.",
+            "Электроотрицательность не изменяется.",
+            "Электроотрицательность увеличивается из-за уменьшения радиуса атома и усиления притяжения валентных электронов к ядру.",
+            "Электроотрицательность сначала падает, затем растет."
+        ],
+        correct: 2, // Индекс 2
+        explanation: "<b>Правильный ответ: Увеличивается снизу вверх</b><br>При движении снизу вверх по группе радиус атома уменьшается, ядра сильнее притягивают электроны, и относительная электроотрицательность растет (самый ЭО элемент — Фтор)."
+    },
+    {
+        id: 30,
+        level: "Раздел 10: Финальная задача VBE (3 балла)",
+        type: "open",
+        question: "Рассчитайте молярную массу (в г/моль) газа, имеющего формулу XH₃, если известно, что 0.2 моль этого газа имеют массу 3.4 г. Введите число.",
+        correctAnswer: "17",
+        acceptedAnswers: ["17"],
+        explanation: "<b>Решение:</b><br>1) Молярная масса $M = \\frac{m}{n} = \\frac{3.4\\text{ г}}{0.2\\text{ моль}} = 17\\text{ г/моль}$.<br>(Этот газ — аммиак NH₃, где $M(\\text{N}) = 14$, $M(3\\text{H}) = 3$, $14 + 3 = 17\\text{ г/моль}$)."
+    }
+];
+
+let currentQuestionIdx = 0;
+let userScore = 0;
+
+// Utility to shuffle arrays for matching options so they are never pre-aligned
+function shuffleArray(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function renderQuestion() {
+    const quizMain = document.getElementById("quiz-container");
+    const q = quizData[currentQuestionIdx];
+
+    document.getElementById("question-count").innerText = `Вопрос ${currentQuestionIdx + 1} из ${quizData.length}`;
+    document.getElementById("score-count").innerText = `Набрано баллов: ${userScore}`;
+    const progressPercent = ((currentQuestionIdx) / quizData.length) * 100;
+    document.getElementById("progress-bar").style.width = `${progressPercent}%`;
+
+    let contentHTML = `
+        <div class="card">
+            <span class="question-badge">${q.level}</span>
+            <div class="question-title">${q.question}</div>
+    `;
+
+    if (q.type === "single" || q.type === "multiple") {
+        contentHTML += `<ul class="options-list">`;
+        q.options.forEach((opt, idx) => {
+            const inputType = q.type === "single" ? "radio" : "checkbox";
+            const inputName = q.type === "single" ? "quiz-opt" : `quiz-opt-${idx}`;
+            contentHTML += `
+                <li class="option-item" onclick="toggleInput(${idx}, '${q.type}')">
+                    <input type="${inputType}" name="${inputName}" id="opt-${idx}" value="${idx}" onclick="event.stopPropagation()">
+                    <label for="opt-${idx}" onclick="event.stopPropagation()">${opt}</label>
+                </li>
+            `;
+        });
+        contentHTML += `</ul>`;
+    } else if (q.type === "matching") {
+        const shuffledOptions = shuffleArray(q.rightOptions);
+        contentHTML += `<table class="matching-table">
+            <thead>
+                <tr>
+                    <th>Вопрос / Пункт</th>
+                    <th>Выберите правильный ответ</th>
+                </tr>
+            </thead>
+            <tbody>`;
+        q.left.forEach((item, idx) => {
+            contentHTML += `
+                <tr>
+                    <td><b>${item}</b></td>
+                    <td>
+                        <select class="matching-select" id="match-${idx}">
+                            <option value="">-- Выберите вариант --</option>
+                            ${shuffledOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+        contentHTML += `</tbody></table>`;
+    } else if (q.type === "open") {
+        contentHTML += `
+            <input type="text" class="text-answer-input" id="open-answer" value="" placeholder="Введите ваш ответ..." autocomplete="off">
+        `;
+    }
+
+    contentHTML += `
+            <button class="btn" id="submit-btn" onclick="checkAnswer()">Ответить</button>
+            <button class="btn" id="next-btn" style="display:none;" onclick="nextQuestion()">Следующий вопрос →</button>
+
+            <div class="explanation-box" id="explanation-box">
+                <div class="explanation-title" id="exp-title"></div>
+                <div class="explanation-text" id="exp-text"></div>
+            </div>
+        </div>
+    `;
+
+    quizMain.innerHTML = contentHTML;
+
+    if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+    }
+}
+
+function toggleInput(idx, type) {
+    const input = document.getElementById(`opt-${idx}`);
+    if (type === 'single') {
+        input.checked = true;
+    } else {
+        input.checked = !input.checked;
+    }
+}
+
+function checkAnswer() {
+    const q = quizData[currentQuestionIdx];
+    let isCorrect = false;
+    let earnedPoints = 0;
+
+    if (q.type === "single") {
+        const selected = document.querySelector('input[name="quiz-opt"]:checked');
+        if (!selected) {
+            alert("Пожалуйста, выберите вариант ответа!");
+            return;
+        }
+        const val = parseInt(selected.value);
+        if (val === q.correct) {
+            isCorrect = true;
+            earnedPoints = 1;
+        }
+    } else if (q.type === "multiple") {
+        const selected = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => parseInt(cb.value));
+        if (selected.length === 0) {
+            alert("Пожалуйста, выберите варианты ответа!");
+            return;
+        }
+        const isMatch = selected.length === q.correct.length && selected.every(v => q.correct.includes(v));
+        if (isMatch) {
+            isCorrect = true;
+            earnedPoints = 2;
+        }
+    } else if (q.type === "matching") {
+        let allSelected = true;
+        let matchedCorrectly = true;
+        q.left.forEach((_, idx) => {
+            const sel = document.getElementById(`match-${idx}`).value;
+            if (!sel) allSelected = false;
+            if (sel !== q.correct[idx]) matchedCorrectly = false;
+        });
+
+        if (!allSelected) {
+            alert("Пожалуйста, выберите ответы для всех строк!");
+            return;
+        }
+        if (matchedCorrectly) {
+            isCorrect = true;
+            earnedPoints = 2;
+        }
+    } else if (q.type === "open") {
+        const userAns = document.getElementById("open-answer").value.trim().toLowerCase();
+        if (!userAns) {
+            alert("Пожалуйста, введите ответ!");
+            return;
+        }
+        const accepted = q.acceptedAnswers.map(a => a.toLowerCase());
+        if (accepted.includes(userAns)) {
+            isCorrect = true;
+            earnedPoints = q.id === 19 || q.id === 30 ? 3 : 2;
+        }
+    }
+
+    if (isCorrect) {
+        userScore += earnedPoints;
+        document.getElementById("score-count").innerText = `Набрано баллов: ${userScore}`;
+    }
+
+    document.querySelectorAll("input, select, button#submit-btn").forEach(el => el.disabled = true);
+    document.getElementById("submit-btn").style.display = "none";
+    document.getElementById("next-btn").style.display = "inline-block";
+
+    const expBox = document.getElementById("explanation-box");
+    const expTitle = document.getElementById("exp-title");
+    const expText = document.getElementById("exp-text");
+
+    expBox.className = `explanation-box ${isCorrect ? 'correct' : 'incorrect'}`;
+    expTitle.innerText = isCorrect ? "✓ Верно!" : "✗ Неверно";
+    expText.innerHTML = q.explanation;
+    expBox.style.display = "block";
+
+    if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+    }
+}
+
+function nextQuestion() {
+    currentQuestionIdx++;
+    if (currentQuestionIdx < quizData.length) {
+        renderQuestion();
+    } else {
+        renderResults();
+    }
+}
+
+function renderResults() {
+    document.getElementById("progress-bar").style.width = "100%";
+    const quizMain = document.getElementById("quiz-container");
+    const maxScore = 44;
+    const percentage = Math.round((userScore / maxScore) * 100);
+
+    let mark = 10;
+    if (percentage < 30) mark = 4;
+    else if (percentage < 50) mark = 5;
+    else if (percentage < 65) mark = 6;
+    else if (percentage < 78) mark = 7;
+    else if (percentage < 88) mark = 8;
+    else if (percentage < 96) mark = 9;
+
+    quizMain.innerHTML = `
+        <div class="card results-card">
+            <h2>Тестирование по теме «Химическая связь» полностью завершено!</h2>
+            <div class="score-display">${userScore} / ${maxScore} баллов</div>
+            <p style="font-size: 1.3rem; font-weight: 600;">Прогнозируемая оценка VBE: <span style="color: var(--primary);">${mark} из 10</span> (${percentage}%)</p>
+            <p style="color: var(--text-muted); margin-top: 20px;">
+                ${percentage >= 80 
+                    ? "Отличная подготовка! Ученица прекрасно разбирается во всех тонкостях механизмов связей, гибридизации и свойств веществ." 
+                    : "Хороший результат! Рекомендуется еще раз закрепить тему пространственного строения молекул и водородных связей."}
+            </p>
+            <button class="btn" onclick="restartQuiz()" style="margin-top: 20px;">Пройти тренажер заново</button>
+        </div>
+    `;
+}
+
+function restartQuiz() {
+    currentQuestionIdx = 0;
+    userScore = 0;
+    renderQuestion();
+}
+
+window.onload = renderQuestion;
+</script>
+</body>
+</html>
